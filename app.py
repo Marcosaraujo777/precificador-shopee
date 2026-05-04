@@ -1,15 +1,12 @@
-from flask import Flask, render_template, request, send_file
+from flask import Flask, render_template, request
 import pandas as pd
 
 app = Flask(__name__)
 
-# =============================
-# CARREGAR PLANILHA
-# =============================
 df = pd.read_excel("Base calculo planilha Shopee APP.xlsx")
 
 # =============================
-# FUNÇÃO DE CÁLCULO COMPLETA
+# CÁLCULO COMPLETO
 # =============================
 def calcular_preco(row, margem, qtd):
 
@@ -24,7 +21,6 @@ def calcular_preco(row, margem, qtd):
     operacional = row["Despesa Operacional %"]
 
     custo_total = (custo + embalagem) * qtd
-
     impostos_pct = ir + pis + icms + difal
 
     preco = 50
@@ -47,32 +43,21 @@ def calcular_preco(row, margem, qtd):
             comissao = 0.14
             fixo = 26
 
-        total_pct = (
-            comissao +
-            impostos_pct +
-            marketing +
-            operacional +
-            margem
-        )
-
+        total_pct = comissao + impostos_pct + marketing + operacional + margem
         preco = (custo_total + fixo) / (1 - total_pct)
 
     lucro = preco * margem
     markup = (preco / custo_total - 1) * 100
 
     return {
+        "qtd": qtd,
         "preco": round(preco,2),
         "lucro": round(lucro,2),
         "markup": round(markup,2),
-        "comissao": round(comissao*100,2),
-        "fixo": fixo,
         "custo_total": round(custo_total,2),
-        "impostos": round(impostos_pct*100,2),
-        "marketing": round(marketing*100,2),
-        "operacional": round(operacional*100,2)
+        "comissao": round(comissao*100,2),
+        "fixo": fixo
     }
-
-dados_exportacao = []
 
 # =============================
 # ROTA PRINCIPAL
@@ -80,56 +65,30 @@ dados_exportacao = []
 @app.route("/", methods=["GET","POST"])
 def home():
 
-    resultado = None
+    resultados = []
     erro = None
 
     if request.method == "POST":
 
         sku = request.form["sku"]
         margem = float(request.form["margem"])
-        qtd = int(request.form["qtd"])
 
         produto = df[df["SKU"].astype(str) == sku]
 
         if produto.empty:
-            erro = "SKU não encontrado na planilha"
+            erro = "SKU não encontrado"
             return render_template("index.html", erro=erro)
 
         row = produto.iloc[0]
 
-        calc = calcular_preco(row, margem, qtd)
+        # 🔥 KITS AUTOMÁTICOS
+        kits = [1, 2, 3, 5, 10]
 
-        resultado = {
-            "sku": sku,
-            "nome": row["Descrição"],
-            "qtd": qtd,
-            "preco": calc["preco"],
-            "lucro": calc["lucro"],
-            "markup": calc["markup"],
-            "custo_total": calc["custo_total"],
-            "comissao": calc["comissao"],
-            "fixo": calc["fixo"],
-            "impostos": calc["impostos"],
-            "marketing": calc["marketing"],
-            "operacional": calc["operacional"]
-        }
+        for k in kits:
+            calc = calcular_preco(row, margem, k)
+            resultados.append(calc)
 
-        dados_exportacao.append(resultado)
+    return render_template("index.html", resultados=resultados, erro=erro)
 
-    return render_template("index.html", resultado=resultado, erro=erro)
-
-# =============================
-# EXPORTAÇÃO
-# =============================
-@app.route("/exportar")
-def exportar():
-    df_saida = pd.DataFrame(dados_exportacao)
-    caminho = "resultado_precificacao.xlsx"
-    df_saida.to_excel(caminho, index=False)
-    return send_file(caminho, as_attachment=True)
-
-# =============================
-# EXECUÇÃO
-# =============================
 if __name__ == "__main__":
     app.run(debug=True)

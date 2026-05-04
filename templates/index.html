@@ -4,46 +4,31 @@
     <title>Precificação Shopee</title>
 
     <style>
-        body {
-            font-family: Arial;
-            background: #f4f6f9;
-        }
+        body { font-family: Arial; background: #f4f6f9; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 25px; border-radius: 10px; margin-top: 40px; }
+        input, button { width: 100%; padding: 10px; margin-top: 10px; }
 
-        .container {
-            max-width: 700px;
-            margin: auto;
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            margin-top: 40px;
-        }
-
-        input, button {
+        table {
             width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-        }
-
-        .resultado {
             margin-top: 20px;
-            padding: 15px;
-            background: #eef2f7;
-            border-radius: 8px;
+            border-collapse: collapse;
         }
 
-        .linha {
-            margin-bottom: 6px;
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: center;
+        }
+
+        th {
+            background: #4CAF50;
+            color: white;
         }
 
         .btn {
             background: #4CAF50;
             color: white;
             border: none;
-        }
-
-        .btn-export {
-            background: #2196F3;
-            color: white;
         }
     </style>
 </head>
@@ -52,7 +37,7 @@
 
 <div class="container">
 
-<h2>Precificação Shopee</h2>
+<h2>Precificação Shopee (Kits Automáticos)</h2>
 
 {% if erro %}
 <p style="color:red;"><b>{{ erro }}</b></p>
@@ -61,40 +46,34 @@
 <form method="post">
     <input name="sku" placeholder="SKU">
     <input name="margem" placeholder="Margem (ex: 0.2)">
-    <input name="qtd" placeholder="Quantidade (kit)">
     <button class="btn">Calcular</button>
 </form>
 
-{% if resultado %}
+{% if resultados %}
 
-<div class="resultado">
+<table>
+    <tr>
+        <th>Kit</th>
+        <th>Preço</th>
+        <th>Lucro</th>
+        <th>Markup %</th>
+        <th>Custo Total</th>
+        <th>Comissão</th>
+        <th>Taxa Fixa</th>
+    </tr>
 
-<h3>{{ resultado.nome }}</h3>
-
-<div class="linha">SKU: {{ resultado.sku }}</div>
-<div class="linha">Quantidade: {{ resultado.qtd }}</div>
-
-<hr>
-
-<div class="linha"><b>Preço Venda:</b> R$ {{ resultado.preco }}</div>
-<div class="linha"><b>Lucro:</b> R$ {{ resultado.lucro }}</div>
-<div class="linha"><b>Markup:</b> {{ resultado.markup }}%</div>
-
-<hr>
-
-<div class="linha">Custo Total: R$ {{ resultado.custo_total }}</div>
-<div class="linha">Comissão Shopee: {{ resultado.comissao }}%</div>
-<div class="linha">Taxa Fixa: R$ {{ resultado.fixo }}</div>
-
-<div class="linha">Impostos: {{ resultado.impostos }}%</div>
-<div class="linha">Marketing: {{ resultado.marketing }}%</div>
-<div class="linha">Operacional: {{ resultado.operacional }}%</div>
-
-</div>
-
-<a href="/exportar">
-    <button class="btn-export">Exportar Excel</button>
-</a>
+    {% for r in resultados %}
+    <tr>
+        <td>{{ r.qtd }}</td>
+        <td>R$ {{ r.preco }}</td>
+        <td>R$ {{ r.lucro }}</td>
+        <td>{{ r.markup }}%</td>
+        <td>R$ {{ r.custo_total }}</td>
+        <td>{{ r.comissao }}%</td>
+        <td>R$ {{ r.fixo }}</td>
+    </tr>
+    {% endfor %}
+</table>
 
 {% endif %}
 
