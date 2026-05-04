@@ -38,6 +38,15 @@
             background: #eef2f7;
             border-radius: 8px;
         }
+
+        .inviavel {
+            background: #ffcccc;
+            font-weight: bold;
+        }
+
+        .ok {
+            background: #ccffcc;
+        }
     </style>
 </head>
 
@@ -45,7 +54,7 @@
 
 <div class="container">
 
-<h2>Precificação Shopee (Kits Automáticos)</h2>
+<h2>Precificação Shopee (Kits 1 a 4)</h2>
 
 {% if erro %}
 <p style="color:red;"><b>{{ erro }}</b></p>
@@ -74,19 +83,17 @@
         <th>Lucro</th>
         <th>Markup %</th>
         <th>Custo Total</th>
-        <th>Comissão</th>
-        <th>Taxa Fixa</th>
+        <th>Status</th>
     </tr>
 
     {% for r in resultados %}
-    <tr>
+    <tr class="{{ 'inviavel' if r.status == 'INVIÁVEL' else 'ok' }}">
         <td>{{ r.qtd }}</td>
         <td>R$ {{ r.preco }}</td>
         <td>R$ {{ r.lucro }}</td>
         <td>{{ r.markup }}%</td>
         <td>R$ {{ r.custo_total }}</td>
-        <td>{{ r.comissao }}%</td>
-        <td>R$ {{ r.fixo }}</td>
+        <td>{{ r.status }}</td>
     </tr>
     {% endfor %}
 </table>

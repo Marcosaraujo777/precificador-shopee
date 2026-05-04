@@ -49,6 +49,12 @@ def calcular_preco(row, margem, qtd):
     lucro = preco * margem
     markup = (preco / custo_total - 1) * 100
 
+    # 🔴 REGRA DE VIABILIDADE
+    if preco > 199.99:
+        status = "INVIÁVEL"
+    else:
+        status = "OK"
+
     return {
         "qtd": qtd,
         "preco": round(preco,2),
@@ -56,7 +62,8 @@ def calcular_preco(row, margem, qtd):
         "markup": round(markup,2),
         "custo_total": round(custo_total,2),
         "comissao": round(comissao*100,2),
-        "fixo": fixo
+        "fixo": fixo,
+        "status": status
     }
 
 # =============================
@@ -82,15 +89,14 @@ def home():
 
         row = produto.iloc[0]
 
-        # 🔥 INFO DO PRODUTO
         produto_info = {
             "nome": row["Descrição"],
             "ean": row["EAN"],
             "sku": sku
         }
 
-        # 🔥 KITS AUTOMÁTICOS
-        kits = [1, 2, 3, 5, 10]
+        # 🔥 KITS AJUSTADOS
+        kits = [1, 2, 3, 4]
 
         for k in kits:
             calc = calcular_preco(row, margem, k)
