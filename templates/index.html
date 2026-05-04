@@ -5,7 +5,8 @@
 
     <style>
         body { font-family: Arial; background: #f4f6f9; }
-        .container { max-width: 800px; margin: auto; background: white; padding: 25px; border-radius: 10px; margin-top: 40px; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 25px; border-radius: 10px; margin-top: 40px; }
+
         input, button { width: 100%; padding: 10px; margin-top: 10px; }
 
         table {
@@ -30,6 +31,13 @@
             color: white;
             border: none;
         }
+
+        .produto-box {
+            margin-top: 20px;
+            padding: 15px;
+            background: #eef2f7;
+            border-radius: 8px;
+        }
     </style>
 </head>
 
@@ -48,6 +56,14 @@
     <input name="margem" placeholder="Margem (ex: 0.2)">
     <button class="btn">Calcular</button>
 </form>
+
+{% if produto %}
+<div class="produto-box">
+    <b>Produto:</b> {{ produto.nome }} <br>
+    <b>SKU:</b> {{ produto.sku }} <br>
+    <b>EAN:</b> {{ produto.ean }}
+</div>
+{% endif %}
 
 {% if resultados %}
 

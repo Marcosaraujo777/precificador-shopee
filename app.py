@@ -67,6 +67,7 @@ def home():
 
     resultados = []
     erro = None
+    produto_info = None
 
     if request.method == "POST":
 
@@ -81,6 +82,13 @@ def home():
 
         row = produto.iloc[0]
 
+        # 🔥 INFO DO PRODUTO
+        produto_info = {
+            "nome": row["Descrição"],
+            "ean": row["EAN"],
+            "sku": sku
+        }
+
         # 🔥 KITS AUTOMÁTICOS
         kits = [1, 2, 3, 5, 10]
 
@@ -88,7 +96,12 @@ def home():
             calc = calcular_preco(row, margem, k)
             resultados.append(calc)
 
-    return render_template("index.html", resultados=resultados, erro=erro)
+    return render_template(
+        "index.html",
+        resultados=resultados,
+        erro=erro,
+        produto=produto_info
+    )
 
 if __name__ == "__main__":
     app.run(debug=True)
